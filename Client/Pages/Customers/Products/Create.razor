@@ -1,0 +1,63 @@
+﻿@page "/products/Create"
+@using work_01.Shared.Models
+@using work_01.Shared.DTO
+
+@inject HttpClient http
+@inject IToastService toastservice
+@inject NavigationManager navigationManager
+
+<h3>Add new roduct here</h3>
+
+
+@code {
+	private ProductDTO product = new();
+	IBrowserFile? selectedFile;
+	private void OnInputFileChange(InputFileChangeEventArgs e)
+	{
+		selectedFile = e.File;
+		product.Picture = e.File.Name;
+	}
+	private async Task SaveProduct()
+	{
+		if(product is not null)
+		{
+			var saveImage = await UploadImageAsync();
+			product.Picture = saveImage.StoredFileName;
+			var response = await http.PostAsJsonAsync("api/ Products", product);
+			if (response.IsSuccessStatusCode)
+			{
+				toastservice.ShowSuccess("data saved successfully");
+				product = new();
+
+			}
+			else
+			{
+				toastservice.ShowSuccess("data failed to save");
+			}
+		}
+
+	}
+	private async Task<ImageUploadResponse> UploadImageAsync()
+	{
+		using (var ms = new MemoryStream())
+		{
+			if(selectedFile is not null)
+			{
+				var content = new MultipartFormDataContent();
+				var fileContent = new StreamContent(selectedFile.OpenReadStream(long.MaxValue));
+				fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(selectedFile.ContentType);
+				content.Add(content: fileContent, name: "\file\"", fileName: selectedFile.Name);
+				var response = await http.PostAsync("api/ Products/Upload", content);
+				var r = await response.Content.ReadFromJsonAsync<ImageUploadResponse>();
+				return r == null ? new ImageUploadResponse() : r;
+			}
+			else
+			{
+				return new ImageUploadResponse();
+			}
+		}
+	}
+
+
+	
+}

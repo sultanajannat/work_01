@@ -1,0 +1,22 @@
+﻿@page "/Product/List"
+@using work_01.Shared.Models
+@using work_01.Shared.DTO
+
+@inject HttpClient http
+@inject IToastService toastservice
+@inject NavigationManager navigationManager
+
+
+<div class="row">
+	<div class="col-12">
+		<h2 class="display-4">Product List</h2>
+		<div class="d-flex justify-content-end">
+			<a class="btn btn-outline-primary btn-sm" href="/products/Create">Add new</a>
+		</div>
+	</div>
+</div>
+<h3>ProductList</h3>
+
+@code {
+
+}
