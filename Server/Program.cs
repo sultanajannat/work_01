@@ -16,8 +16,10 @@ namespace work_01
 			builder.Services.AddControllersWithViews();
 			builder.Services.AddRazorPages();
 			builder.Services.AddDbContext<ProductDbContext>(o => o.UseSqlServer(builder.Configuration.GetConnectionString("apcon")));
+			
 			builder.Services.AddBlazoredToast();
 			var app = builder.Build();
+
 			
 			// Configure the HTTP request pipeline.
 			if (app.Environment.IsDevelopment())

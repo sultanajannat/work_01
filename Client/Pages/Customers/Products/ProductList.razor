@@ -15,8 +15,43 @@
 		</div>
 	</div>
 </div>
-<h3>ProductList</h3>
+@if (products is null)
+{
+	<div>loading...</div>
+}
+else
+{
+		<table class="table table-bordered table-striped table-sm">
+			<thead class="table-primary">
+				<tr>
+					<th>Image</th>
+					<th>Name</th>
+					<th>Price</th>
+					<th>available</th>
+					<th>Action</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var p in products)
+			{
+				<tr>
+					<td>
+						<img src="/Images/@p.Picture" class="rounded-circle" width="50"/>
+					</td>
+					<td>@p.ProductName</td>
+					<td>@p.Price.ToString("0.00")</td>
+					<td>@p.IsAvailable</td>
+					<td></td>
+				</tr>
+			}
+			</tbody>
+		</table>
+}
 
 @code {
-
+	private Product[]? products;
+	protected override async Task OnInitializedAsync()
+	{
+		products = await http.GetFromJsonAsync<Product[]>("api/Products");
+	}
 }

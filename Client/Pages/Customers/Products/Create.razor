@@ -4,7 +4,6 @@
 
 @inject HttpClient http
 @inject IToastService toastservice
-@inject NavigationManager navigationManager
 
 <h3>Add new roduct here</h3>
 
@@ -84,7 +83,7 @@
 		{
 			var saveImage = await UploadImageAsync();
 			product.Picture = saveImage.StoredFileName;
-			var response = await http.PostAsJsonAsync("api/ Products", product);
+			var response = await http.PostAsJsonAsync("api/Products", product);
 			if (response.IsSuccessStatusCode)
 			{
 				toastservice.ShowSuccess("data saved successfully");
@@ -107,8 +106,8 @@
 				var content = new MultipartFormDataContent();
 				var fileContent = new StreamContent(selectedFile.OpenReadStream(long.MaxValue));
 				fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(selectedFile.ContentType);
-				content.Add(content: fileContent, name: "\file\"", fileName: selectedFile.Name);
-				var response = await http.PostAsync("api/ Products/Upload", content);
+				content.Add(content: fileContent, name: "\"file\"", fileName: selectedFile.Name);
+				var response = await http.PostAsync("api/Products/Upload", content);
 				var r = await response.Content.ReadFromJsonAsync<ImageUploadResponse>();
 				return r == null ? new ImageUploadResponse() : r;
 			}
