@@ -1,0 +1,64 @@
+﻿@page "/Customer/delete/{id:int}"
+@using work_01.Shared.Models
+@using work_01.Shared.DTO
+
+@inject HttpClient http
+@inject IToastService toastservice
+@inject NavigationManager navigationManager
+<div class="row">
+	@if(customer is null)
+	{
+		<div>loading</div>
+
+	}
+	else
+	{
+			<EditForm Model="@customer" OnValidSubmit="DeleteCustomer">
+				<h3 class="display-4 alert alert-danger"> are you sure to delete?</h3>
+
+			<div class="row mb-1">
+				<label class="col form-label col-2">customer NAme</label>
+				<div class="col-10">
+					<InputText @bind-Value="customer.CustomerName" class="form-control" />
+					
+				</div>
+			</div>
+			<div class="row mb-1">
+				<label class="col form-label col-2">customer Address</label>
+				<div class="col-10">
+					<InputText @bind-Value="customer.Address" class="form-control" />
+					
+				</div>
+			</div>
+			<div class="row mb-1">
+				<label class="col form-label col-2">customer Email</label>
+				<div class="col-10">
+					<InputText @bind-Value="customer.Email" class="form-control" />
+					
+				</div>
+			</div>
+			<div>
+				<button type="submit" class=" btn btn-danger">Delete</button>
+			</div>
+			</EditForm>
+	}
+</div>
+
+
+@code {
+	[Parameter] public int id { get; set; }
+	private Customer? customer = default!;
+	protected override async Task OnInitializedAsync()
+	{
+		customer = await http.GetFromJsonAsync<Customer>($"api/Customers/{id}");
+	}
+	private async Task DeleteCustomer()
+	{
+		var response = await http.DeleteAsync($"api/Customers/{id}");
+		if (response.IsSuccessStatusCode)
+		{
+			toastservice.ShowSuccess("data ddeleated successfully");
+			navigationManager.NavigateTo("/Customers/list");
+		}
+	}
+}

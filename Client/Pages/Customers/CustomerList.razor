@@ -1,0 +1,59 @@
+﻿@page "/Customers/list"
+@using work_01.Shared.Models
+@using work_01.Shared.DTO
+
+@inject HttpClient http
+<div class="row">
+	<div class="col-12">
+		<h3 class="display-4">Customers</h3>
+		<div class="d-flex justify-content-end">
+			<a href="/Customers/Create" class="btn btn-primary btn-sm">Add new</a>
+		</div>
+
+		@if (customers is null)
+		{
+			<div>loading</div>
+		}
+		else
+		{
+				<table class="table table-bordered table-sm table-striped">
+					<thead class="table-primary">
+						<tr>
+							<th>Customer Name</th>
+							<th>Address</th>
+							<th>Email</th>
+							<th>Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var c in customers)
+					{
+						<tr>
+							<td>@c.CustomerName</td>
+							<td>@c.Address</td>
+							<td>@c.Email</td>
+							<td>
+								<a class="btn btn-outline-success btn-sm" href="Customer/edit/@c.CustomerID">Edit</a>
+								<a class="btn btn-outline-danger btn-sm" href="Customer/delete/@c.CustomerID">Delete</a>
+
+							</td>
+						</tr>
+					}
+					</tbody>
+				</table>
+		}
+	</div>
+</div>
+
+
+@code {
+	private CustomerDTO[]? customers;
+	protected override async Task OnInitializedAsync()
+	{
+		customers = await this.http.GetFromJsonAsync<CustomerDTO[]>("api/Customers/DTO");
+	}
+	public string getDisabledClass(bool canDelete)
+	{
+		return canDelete ? "" : "disabled";
+	}
+}

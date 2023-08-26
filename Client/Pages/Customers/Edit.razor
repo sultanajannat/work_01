@@ -1,0 +1,59 @@
+﻿@page "/Customer/edit/{id:int}"
+@using work_01.Shared.Models
+@using work_01.Shared.DTO
+
+@inject HttpClient http
+@inject IToastService toastservice
+
+<div class="row">
+	<div class="col-12">
+		<EditForm Model="@customer" OnValidSubmit="SaveCustomer">
+			<h3 class="display-4">add new customer</h3>
+			<DataAnnotationsValidator />
+			<div class="row mb-1">
+				<label class="col form-label col-2">customer NAme</label>
+				<div class="col-10">
+					<InputText @bind-Value="customer.CustomerName" class="form-control" />
+					<ValidationMessage For="@(()=>customer.CustomerName)" class="text-danger" />
+				</div>
+			</div>
+			<div class="row mb-1">
+				<label class="col form-label col-2">customer Address</label>
+				<div class="col-10">
+					<InputText @bind-Value="customer.Address" class="form-control" />
+					<ValidationMessage For="@(()=>customer.Address)" class="text-danger" />
+				</div>
+			</div>
+			<div class="row mb-1">
+				<label class="col form-label col-2">customer Email</label>
+				<div class="col-10">
+					<InputText @bind-Value="customer.Email" class="form-control" />
+					<ValidationMessage For="@(()=>customer.Email)" class="text-danger" />
+				</div>
+			</div>
+			<div class="row mb-1">
+				<div class="col-10">
+					<button type="submit" class="btn btn-primary">Update</button>
+				</div>
+			</div>
+		</EditForm>
+	</div>
+</div>
+
+@code {
+	[Parameter]public int id { get; set; }
+	private Customer? customer = default!;
+	protected override async Task OnInitializedAsync()
+	{
+		customer = await http.GetFromJsonAsync<Customer>($"api/Customers/{id}");
+	}
+	private async Task SaveCustomer()
+	{
+		var response = await http.PutAsJsonAsync($"api/Customers/{id}",customer);
+		if (response.IsSuccessStatusCode)
+		{
+			toastservice.ShowSuccess("data Updated successfully");
+			customer = new();
+		}
+	}
+}
