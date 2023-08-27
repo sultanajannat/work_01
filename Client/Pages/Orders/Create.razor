@@ -5,6 +5,91 @@
 @inject HttpClient http
 @inject IToastService toastservice
 
+
+<div class="row">
+	<div class="col-12">
+		<EditForm Model="@order">
+			<h3 class="display-4">Add Customer</h3>
+			<DataAnnotationsValidator/>
+			<div class="row mb-1">
+				<label class="col form-label col-2" for="@order.CustomerID">customer</label>
+				<div class="col-7">
+					<InputSelect @bind-Value="order.CustomerID" class="form-select">
+						<option value="">select</option>
+						@if(Customers is not null)
+						{
+							foreach (var c in Customers)
+							{
+								<option value="@c.CustomerID">@c.CustomerName</option>
+								
+							}
+						}
+					</InputSelect>
+					<ValidationMessage For="@(()=>order.CustomerID)" class="text-danger"/>
+				</div>
+
+				
+			</div>
+
+			<div class="row mb-1">
+				<label class="col form-label col-2" for="@order.OrderDate">Order Date</label>
+				<div class="col-7">
+					<InputDate @bind-Value="order.OrderDate" class="form-control"/>
+						
+					<ValidationMessage For="@(()=>order.CustomerID)" class="text-danger" />
+				</div>
+
+
+			</div>
+
+			<div class="row mb-1">
+				<label class="col form-label col-2" for="@order.DeliveryDate">Delivery Date</label>
+				<div class="col-7">
+					<InputDate @bind-Value="order.DeliveryDate" class="form-control" />
+
+					<ValidationMessage For="@(()=>order.DeliveryDate)" class="text-danger" />
+				</div>
+
+
+			</div>
+
+			<div class="row mb-1">
+				<label class="col form-label col-2" for="@order.Status">Status</label>
+				<div class="col-7">
+					<InputSelect @bind-Value="@order.Status" class="form-select">
+						
+						@if (statusNames is not null)
+						{
+							foreach (var s in statusNames)
+							{
+								<option value="@s">@s</option>
+
+							}
+						}
+					</InputSelect>
+					<ValidationMessage For="@(()=>order.Status)" class="text-danger"/>
+				</div>
+
+
+			</div>
+
+			
+		</EditForm>
+	</div>
+</div>
 @code {
+	private OrderDTO order = new();
+	private Customer[]? Customers;
+	private Product[]? Products;
+	private string[]? statusNames;
+
+	protected override async Task OnInitializedAsync()
+	{
+		order.OrderItems.Add(new OrderItemDTO());
+		statusNames = Enum.GetNames<Status>();
+		Customers = await http.GetFromJsonAsync<Customer[]>("api/Customers");
+		Products = await http.GetFromJsonAsync<Product[]>("api/Products");
+	}
+
 
 }

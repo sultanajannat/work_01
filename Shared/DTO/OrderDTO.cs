@@ -21,7 +21,7 @@ namespace work_01.Shared.DTO
 		[Required, EnumDataType(typeof(Status))]
 		public Status Status { get; set; }
 
-		[ Required]
+		[Required]
 		public int CustomerID { get; set; }
 		
 		public virtual ICollection<OrderItemDTO> OrderItems { get; set; } = new List<OrderItemDTO>();
