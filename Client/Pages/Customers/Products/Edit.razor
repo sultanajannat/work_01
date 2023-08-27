@@ -1,0 +1,146 @@
+﻿@page "/Products/edit/{id:int}"
+@using work_01.Shared.Models
+@using work_01.Shared.DTO
+
+@inject HttpClient http
+@inject IToastService toastservice
+<h3 class="display-4">Edit products</h3>
+<div class="row">
+	@if(product is null)
+	{
+		<div class="col-12">
+			loading...
+		</div>
+	}
+	else
+	{
+		<div class="col-9">
+			<EditForm Model="@product" OnValidSubmit="UpdateProduct">
+				<h3>Edit Product</h3>
+				<DataAnnotationsValidator/>
+				<div class="row mb-1">
+					<label class="col-form-label col-2 text-end" for="@product.ProductName">Product Name</label>
+					<div class="col-4">
+						<InputText @bind-Value="product.ProductName" class="form-control" />
+					</div>
+					<div class="col-6">
+						<ValidationMessage For="@(()=>product.ProductName)" class="text-danger" />
+					</div>
+				</div>
+
+
+				<div class="row mb-1">
+					<label class="col-form-label col-2 text-end" for="@product.Price">Product Price</label>
+					<div class="col-4">
+						<InputNumber @bind-Value="product.Price" class="form-control" />
+					</div>
+					<div class="col-6">
+						<ValidationMessage For="@(()=>product.Price)" class="text-danger" />
+					</div>
+				</div>
+
+				<div class="row mb-1">
+					<label class="col-form-label col-2 text-end" for="@product.Picture">Picture</label>
+					<div class="col-4">
+						<InputFile OnChange="@OnInputFileChange" class="form-control" />
+						<input type="hidden" @bind="@product.ProductID" />
+					</div>
+					<div class="col-6">
+						<ValidationMessage For="@(()=>product.Picture)" class="text-danger" />
+					</div>
+				</div>
+
+				<div class="row mb-1">
+					<label class="col-form-label col-2 text-end" for="@product.IsAvailable">Available</label>
+					<div class="col-4">
+						<InputCheckbox @bind-Value="product.IsAvailable" class="form-check-input" />
+					</div>
+					<div class="col-6">
+						<ValidationMessage For="@(()=>product.IsAvailable)" class="text-danger" />
+					</div>
+				</div>
+
+				<div class="row mb-1">
+
+					<div class="col-10 offset-2">
+						<button type="submit" class="btn btn-primary">Update</button>
+					</div>
+
+				</div>
+			</EditForm>
+		</div>
+		<div class="col-3">
+			@if(product is not null)
+			{
+				<img src="/Images/@product.Picture" class="img-thumbnail" style="width:150px;height:250px"/>
+			}
+		</div>
+
+	}
+</div>
+
+@code {
+	[Parameter] public int id { get; set; }
+	private ProductEditDTO? product = new();
+	IBrowserFile? selectedFile;
+	protected override async Task OnInitializedAsync()
+	{
+		product = await http.GetFromJsonAsync<ProductEditDTO>($"api/Products/{id}");
+	}
+
+	private void OnInputFileChange(InputFileChangeEventArgs e)
+	{
+		selectedFile = e.File;
+		//product.Picture = e.File.Name;
+
+	}
+
+	private async Task UpdateProduct()
+	{
+		if(selectedFile is not null)
+		{
+			if(product is not null)
+			{
+				var saveImage = await UploadImageAsync();
+				product.Picture = saveImage.StoredFileName;
+
+			}
+		}
+		var response = await http.PutAsJsonAsync($"api/Products/{id}", product);
+			if (response.IsSuccessStatusCode)
+			{
+				toastservice.ShowSuccess("data updated successfully");
+				
+
+			}
+			else
+			{
+				toastservice.ShowSuccess("data failed to Update");
+			}
+
+		
+
+	}
+	private async Task<ImageUploadResponse> UploadImageAsync()
+	{
+		using (var ms = new MemoryStream())
+		{
+			if (selectedFile is not null)
+			{
+				var content = new MultipartFormDataContent();
+				var fileContent = new StreamContent(selectedFile.OpenReadStream(long.MaxValue));
+				fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(selectedFile.ContentType);
+				content.Add(content: fileContent, name: "\"file\"", fileName: selectedFile.Name);
+				var response = await http.PostAsync("api/Products/Upload", content);
+				var r = await response.Content.ReadFromJsonAsync<ImageUploadResponse>();
+				return r == null ? new ImageUploadResponse() : r;
+			}
+			else
+			{
+				return new ImageUploadResponse();
+			}
+		}
+	}
+
+
+}

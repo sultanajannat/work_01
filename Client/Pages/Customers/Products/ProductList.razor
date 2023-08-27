@@ -40,8 +40,11 @@ else
 					</td>
 					<td>@p.ProductName</td>
 					<td>@p.Price.ToString("0.00")</td>
-					<td>@p.IsAvailable</td>
-					<td></td>
+					<td>@(p.IsAvailable?"Yes":"No")</td>
+					<td>
+						<a class="btn btn-success " href="/Products/edit/@p.ProductID">Edit</a>
+						<a class="btn btn-danger " href="/Products/delete/@p.ProductID">delete</a>
+					</td>
 				</tr>
 			}
 			</tbody>
