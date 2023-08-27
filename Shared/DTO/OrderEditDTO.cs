@@ -11,7 +11,7 @@ using work_01.Shared.Models;
 
 namespace work_01.Shared.DTO
 {
-	public class OrderDTO
+	public class OrderEditDTO
 	{
 		public int OrderID { get; set; }
 		[Required, Column(TypeName = "date"), Display(Name = "Order Date"), DisplayFormat(DataFormatString = "{yyyy-MM-dd}", ApplyFormatInEditMode = true)]
@@ -21,9 +21,9 @@ namespace work_01.Shared.DTO
 		[Required, EnumDataType(typeof(Status))]
 		public Status Status { get; set; }
 
-		[ Required]
+		[ForeignKey("Customer"), Required, Display(Name = "Customer")]
 		public int CustomerID { get; set; }
-		
+		public Customer Customer { get; set; } = default!;
 		public virtual ICollection<OrderItemDTO> OrderItems { get; set; } = new List<OrderItemDTO>();
 	}
 }

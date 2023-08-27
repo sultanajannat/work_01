@@ -1,0 +1,18 @@
+﻿@page "/orders/List"
+@using work_01.Shared.Models
+@using work_01.Shared.DTO
+
+@inject HttpClient http
+@inject IToastService toastservice
+<h3>OrderList</h3>
+<div class="row">
+	<div class="col-12">
+		<h2 class="display-4">Order Details</h2>
+		<div class="d-flex justify-content-end">
+			<a class="btn btn-outline-primary" href="/orders/Create">Add new Order</a>
+		</div>
+	</div>
+</div>
+@code {
+
+}
