@@ -17,7 +17,7 @@ namespace work_01.Shared.DTO
 		[Required, Column(TypeName = "date"), Display(Name = "Order Date"), DisplayFormat(DataFormatString = "{yyyy-MM-dd}", ApplyFormatInEditMode = true)]
 		public DateTime OrderDate { get; set; }
 		[Required, Column(TypeName = "date"), Display(Name = "DeliveryDate Date"), DisplayFormat(DataFormatString = "{yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-		public DateTime? DeliveryDate { get; set; }
+		public DateTime DeliveryDate { get; set; }
 		[Required, EnumDataType(typeof(Status))]
 		public Status Status { get; set; }
 

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 using work_01.Server;
 using work_01.Shared.DTO;
 using work_01.Shared.Models;
@@ -99,20 +100,67 @@ namespace work_01.Server.Controllers
 
             return NoContent();
         }
+		[HttpPut("DTO/{id}")]
+		public async Task<IActionResult> PutOrderWithOrderItem(int id, OrderEditDTO order)
+		{
+			if (id != order.OrderID)
+			{
+				return BadRequest();
+			}
+			var existing = await _context.Orders.Include(x => x.OrderItems).FirstAsync(o => o.OrderID == id);
+			_context.OrderItems.RemoveRange(existing.OrderItems);
+			existing.OrderID = order.OrderID;
+			existing.OrderDate = order.OrderDate;
+			existing.DeliveryDate = order.DeliveryDate;
+			existing.CustomerID = order.CustomerID;
+			existing.Status = order.Status;
+			foreach (var item in order.OrderItems)
+			{
+				_context.OrderItems.Add(new OrderItem { OrderID = order.OrderID, ProductID = item.ProductID, Quantity = item.Quantity });
+			}
 
-        // POST: api/Orders
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Order>> PostOrder(Order order)
+
+			try
+			{
+				await _context.SaveChangesAsync();
+			}
+			catch (Exception ex)
+			{
+
+				throw new Exception(ex.InnerException?.Message);
+
+			}
+
+			return NoContent();
+		}
+
+		// POST: api/Orders
+		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+		[HttpPost("DTO")]
+        public async Task<ActionResult<Order>> PostOrder(OrderDTO dto)
         {
           if (_context.Orders == null)
           {
               return Problem("Entity set 'ProductDbContext.Orders'  is null.");
           }
+            var order = new Order
+            {
+                CustomerID=dto.CustomerID,
+                OrderDate=dto.OrderDate,
+                DeliveryDate=dto.DeliveryDate,
+                Status=dto.Status,
+            };
+            foreach (var oi in dto.OrderItems)
+            {
+                order.OrderItems.Add(new OrderItem
+                {
+                    ProductID=oi.ProductID,
+                    Quantity=oi.Quantity,
+                });
+            }
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetOrder", new { id = order.OrderID }, order);
+            return order;
         }
 
         // DELETE: api/Orders/5

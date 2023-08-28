@@ -8,7 +8,7 @@
 
 <div class="row">
 	<div class="col-12">
-		<EditForm Model="@order">
+		<EditForm Model="@order" OnValidSubmit="SaveOrder">
 			<h3 class="display-4">Add Customer</h3>
 			<DataAnnotationsValidator/>
 			<div class="row mb-1">
@@ -34,7 +34,7 @@
 			<div class="row mb-1">
 				<label class="col form-label col-2" for="@order.OrderDate">Order Date</label>
 				<div class="col-7">
-					<InputDate @bind-Value="order.OrderDate" class="form-control"/>
+					<InputDate @bind-Value="order.OrderDate" Type="InputDateType.Date" class="form-control" />
 						
 					<ValidationMessage For="@(()=>order.CustomerID)" class="text-danger" />
 				</div>
@@ -45,7 +45,7 @@
 			<div class="row mb-1">
 				<label class="col form-label col-2" for="@order.DeliveryDate">Delivery Date</label>
 				<div class="col-7">
-					<InputDate @bind-Value="order.DeliveryDate" class="form-control" />
+					<InputDate @bind-Value="order.DeliveryDate" Type="InputDateType.Date" class="form-control" />
 
 					<ValidationMessage For="@(()=>order.DeliveryDate)" class="text-danger" />
 				</div>
@@ -73,7 +73,49 @@
 
 			</div>
 
-			
+			<div class="row mb-2">
+				<div class="col-9">
+					<div class="d-flex justify-content-between">
+						
+						<button @onclick="@AddItem" type="button" class="btn btn-primary btn-sm ">add item</button>
+					</div>
+				</div>
+			</div>
+			@foreach (var oi in order.OrderItems)
+			{
+				int i = 0;
+				<div class="row mb-1">
+					<label class="col-form-label col-2" for="@order.CustomerID">Product</label>
+					<div class="col-3">
+						<InputSelect @bind-Value="oi.ProductID" class="form-select">
+							<option>Select</option>
+							@if(Products is not null)
+							{
+								foreach (var p in Products)
+							{
+								<option value="@p.ProductID">@p.ProductName</option>
+							}
+							}
+						</InputSelect>
+						<ValidationMessage For="@(()=>oi.ProductID)" class="text-danger" />
+					</div>
+					<label class="col-form-label col-2 text-end" for="@oi.Quantity">Quantity</label>
+					<div class="col-3">
+						<InputNumber @bind-Value="@oi.Quantity" class="form-control"/>
+						<ValidationMessage For="@(()=>oi.Quantity)" class="text-danger" />
+					</div>
+					<div class="col-1">
+						<button @onclick="@(()=>RemoveItem(i++))" type="button" class="btn btn-danger btn-sm">remove</button>
+					</div>
+				</div>
+			}
+			<div class="row mb-2">
+				<div class="col-12">
+					<div class="d-flex justify-content-end">
+						<button type="submit" class="btn">Save to order</button>
+					</div>
+				</div>
+			</div>
 		</EditForm>
 	</div>
 </div>
@@ -89,6 +131,31 @@
 		statusNames = Enum.GetNames<Status>();
 		Customers = await http.GetFromJsonAsync<Customer[]>("api/Customers");
 		Products = await http.GetFromJsonAsync<Product[]>("api/Products");
+	}
+	private void AddItem()
+	{
+		order.OrderItems.Add(new OrderItemDTO());
+	}
+	private void RemoveItem(int index)
+	{
+		if (order.OrderItems.Count > 1)
+			((List<OrderItemDTO>)order.OrderItems).RemoveAt(index);
+
+	}
+	private async Task SaveOrder()
+	{
+		var response = await http.PostAsJsonAsync("api/Orders/DTO", order);
+		if (response.IsSuccessStatusCode)
+		{
+			toastservice.ShowSuccess("data saved successfully");
+			order = new();
+			order.OrderItems.Add(new OrderItemDTO());
+		}
+		else
+		{
+			toastservice.ShowSuccess("data failed to save");
+		}
+		await Task.CompletedTask;
 	}
 
 

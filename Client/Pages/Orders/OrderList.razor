@@ -10,9 +10,59 @@
 		<h2 class="display-4">Order Details</h2>
 		<div class="d-flex justify-content-end">
 			<a class="btn btn-outline-primary" href="/orders/Create">Add new Order</a>
+
 		</div>
+        @if (orders is null)
+        {
+            <div>Loading..</div>
+        }
+        else
+        {
+            <table class="table table-bordered table-hover table-striped table-responsive-sm shadow">
+                <thead class="table-light">
+                    <tr>
+                        <th>Order Date</th>
+                        <th>Customer</th>
+                        <th>Delivery date</th>
+                        <th>Status</th>
+                        <th>Items</th>
+                        <th>Order Value</th>
+                        <th>Actions</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var o in orders)
+                    {
+                        <tr>
+                            <td>@o.OrderDate.ToString("yyyy-MM-dd")</td>
+                            <td>@o.CustomerName</td>
+                            <td>@o.DeliveryDate?.ToString("yyyy-MM-dd")</td>
+                            <td>@o.Status</td>
+                            <td>@o.ItemCount</td>
+                            <td>@o.OrderValue.ToString("0.00")</td>
+                            <td>
+                                <a class="btn btn-outline-primary shadow btn-sm" href="/Orders/Edit/@o.OrderID"><i class="bi bi-pencil"></i>Edit</a>
+                                <button class="btn btn-outline-danger shadow-sm btn-sm"><i class="bi bi-trash"></i>Delete</button>
+                            </td>
+                            <td>
+                                <a class="btn btn-link" href="/Orders/Details/@o.OrderID"><i class="bi bi-info-circle"></i>Details</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
 	</div>
 </div>
 @code {
-
+	private OrderViewDTO[]? orders;
+	private OrderDTO[]? or;
+	protected override async Task OnInitializedAsync()
+	{
+		orders = await http.GetFromJsonAsync<OrderViewDTO[]>("api/Orders/DTO");
+	}
 }
+
+
+

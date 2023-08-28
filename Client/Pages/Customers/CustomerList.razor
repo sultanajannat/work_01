@@ -34,7 +34,7 @@
 							<td>@c.Email</td>
 							<td>
 								<a class="btn btn-outline-success btn-sm" href="Customer/edit/@c.CustomerID">Edit</a>
-								<a class="btn btn-outline-danger btn-sm" href="Customer/delete/@c.CustomerID">Delete</a>
+								<a class="btn btn-outline-danger btn-sm @getDisabledClass(c.CanDelete)" href="Customer/delete/@c.CustomerID">Delete</a>
 
 							</td>
 						</tr>

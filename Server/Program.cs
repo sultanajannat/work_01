@@ -16,7 +16,12 @@ namespace work_01
 			builder.Services.AddControllersWithViews();
 			builder.Services.AddRazorPages();
 			builder.Services.AddDbContext<ProductDbContext>(o => o.UseSqlServer(builder.Configuration.GetConnectionString("apcon")));
-			
+			builder.Services.AddControllersWithViews()
+	 .AddNewtonsoftJson(option =>
+	 {
+		 option.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Serialize;
+		 option.SerializerSettings.PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.Objects;
+	 });
 			builder.Services.AddBlazoredToast();
 			var app = builder.Build();
 

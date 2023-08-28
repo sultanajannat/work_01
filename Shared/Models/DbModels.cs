@@ -32,9 +32,9 @@ namespace work_01.Shared.Models
 	{
         public int OrderID { get; set; }
 		[Required,Column(TypeName ="date"),Display(Name ="Order Date"),DisplayFormat(DataFormatString ="{yyyy-MM-dd}",ApplyFormatInEditMode =true)]
-        public DateTime OrderDate { get; set; }
+        public DateTime OrderDate { get; set; }=DateTime.Now;
 		[Required, Column(TypeName = "date"), Display(Name = "DeliveryDate Date"), DisplayFormat(DataFormatString = "{yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-		public DateTime DeliveryDate { get; set; }
+		public DateTime DeliveryDate { get; set; }= DateTime.Now;
 		[Required,EnumDataType(typeof(Status))]
         public Status Status { get; set; }
 
