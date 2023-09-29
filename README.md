@@ -14,7 +14,7 @@ To get started with this Blazor E-Commerce & Order Management project:
 
 Clone the Repository: Clone this repository to your local machine using Git.
 
-git clone https://github.com/abdullah-zero9/Blazor-E-Commerce----Order-Managment.git
+
 Run the Project: Open the project and run it to automatically set up the required database.
 
 Explore the Features: Start using the application to manage products, process orders, and experience the power of Blazor in action.
